@@ -1,0 +1,68 @@
+defaultTasks 'clean', 'test'
+
+apply plugin: "java"
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    ext {
+        serenityVersion = "2.3.13"
+        serenityGradleVersion = "2.3.13"
+        serenityCucumberVersion = "2.2.6"
+    }
+    dependencies {
+        classpath "net.serenity-bdd:serenity-gradle-plugin:$rootProject.ext.serenityGradleVersion"
+        classpath "net.serenity-bdd:serenity-single-page-report:2.4.34"
+    }
+}
+
+serenity {
+    reports = ["single-page-html"]
+}
+
+configurations.all {
+    resolutionStrategy {
+        force "io.cucumber:cucumber-core:5.0.0"
+    }
+}
+
+dependencies {
+    implementation "net.serenity-bdd:serenity-core:$rootProject.ext.serenityVersion"
+    implementation "net.serenity-bdd:serenity-junit:$rootProject.ext.serenityVersion"
+    implementation "net.serenity-bdd:serenity-screenplay:$rootProject.ext.serenityVersion"
+    implementation "net.serenity-bdd:serenity-screenplay-webdriver:$rootProject.ext.serenityVersion"
+
+    implementation "net.sf.jt400:jt400:8.5"
+
+    testImplementation "net.serenity-bdd:serenity-cucumber5:$rootProject.ext.serenityCucumberVersion"
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.assertj:assertj-core:3.8.0"
+    implementation  group: 'org.hamcrest', name: 'hamcrest', version: '2.2'
+
+}
+
+test {
+    systemProperties System.getProperties()
+}
+
+gradle.startParameter.continueOnFailure = true
+test.finalizedBy(aggregate, reports)
