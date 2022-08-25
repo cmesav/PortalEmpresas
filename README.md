@@ -8,4 +8,4 @@ Execute the project running the command
 
 You can find the report in 
     
-    target/site/index.html
+    target/site/serenity/index.html
